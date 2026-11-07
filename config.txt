@@ -13,7 +13,7 @@ COMPANY_NAME=Sample Samples
 # --- Supabase (Project Settings -> API) --------------------------
 # Leave these blank to run in LOCAL mode (data saved in data/db/ as JSON).
 SUPABASE_URL=https://yxzupivpaoewzfeoylsc.supabase.co
-SUPABASE_KEY=sb_secret_-BEy9D1_HMYn_MpVdT-rMA_Yb-p1DgU
+SUPABASE_KEY=sb_secret_VhhOfdICgsqpTbYB4ZNnZQ_L4kB61pQ
 
 # --- First manager account ---------------------------------------
 # Created automatically on first start if it does not exist yet.
