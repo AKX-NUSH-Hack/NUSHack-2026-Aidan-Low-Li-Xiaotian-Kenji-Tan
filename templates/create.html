@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Create a checklist · {{ company_name }}{% endblock %}
+
+{% block content %}
+
+<section data-step="name" data-title="Name it" data-progress="1/4">
+  <div class="card">
+    <h2 class="card-title">What is this checklist called?</h2>
+    <p class="step-lead">Something the person doing it will recognise.</p>
+    <input type="text" id="title-input" class="input" data-autofocus maxlength="80"
+           placeholder="e.g. Night Patrol - Block E "aria-label="Checklist title">
+    <p class="hint" id="name-hint"></p>
+    <div class="step-foot">
+      <button type="button" class="btn btn-primary btn-lg" id="name-next">Next</button>
+    </div>
+  </div>
+</section>
+
+<section data-step="items" data-title="Add the items" data-progress="2/4" hidden>
+  <div class="card">
+    <h2 class="card-title">What should be checked?</h2>
+    <p class="step-lead">One line per thing to check. Choose what kind of answer each one needs.</p>
+    <ol class="builder" id="builder"></ol>
+    <div class="row mt-sm">
+      <button type="button" class="btn btn-ghost" id="add-item-btn">+ Add another item</button>
+    </div>
+    <p class="hint" id="items-hint"></p>
+    <div class="step-foot">
+      <button type="button" class="btn btn-primary btn-lg" id="items-next">Make the code</button>
+    </div>
+  </div>
+</section>
+
+<section data-step="code" data-title="Your code and QR" data-progress="3/4" hidden>
+  <div class="card">
+    <h2 class="card-title" id="code-heading">Your checklist is ready</h2>
+    <p class="step-lead" id="code-lead"></p>
+
+    <div class="qr-wrap">
+      <img id="result-qr" alt="QR code for this checklist" class="qr-img" hidden>
+      <p class="hint" id="qr-hint" hidden></p>
+    </div>
+
+    <label class="label mt-md" for="result-code">The code itself</label>
+    <textarea id="result-code" class="input code" rows="3" readonly spellcheck="false" aria-label="Checklist code"></textarea>
+
+    <div class="row row-wrap mt-sm">
+      <button type="button" class="btn btn-ghost" id="copy-btn">Copy code</button>
+      <a class="btn btn-ghost" id="qr-svg-btn" download="checklist-qr.svg" hidden>Download SVG</a>
+      <button type="button" class="btn btn-ghost" id="qr-png-btn" hidden>Download PNG</button>
+    </div>
+
+    <div class="step-foot">
+      <button type="button" class="btn btn-primary btn-lg" data-go="share">Next</button>
+    </div>
+  </div>
+</section>
+
+<section data-step="share" data-title="What now?" data-progress="4/4" hidden>
+  <div class="bigbtns">
+    <button type="button" class="bigbtn bigbtn-primary" id="do-now">
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong>Do it now</strong><span>Open it and start answering</span></span>
+    </button>
+
+    <button type="button" class="bigbtn" id="save-btn">
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong id="save-label">Save it for later</strong><span>Keeps it under My checklists</span></span>
+    </button>
+
+    <button type="button" class="bigbtn" id="publish-btn" hidden>
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 12h6M9 16h6"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong id="publish-label">Give it to everyone</strong><span>Publish it so every user sees it</span></span>
+    </button>
+
+    <button type="button" class="bigbtn" id="make-another">
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong>Make another one</strong><span>Start a new checklist</span></span>
+    </button>
+
+    <a class="bigbtn" href="/">
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 22v-7h6v7"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong>Go home</strong><span>Back to the main screen</span></span>
+    </a>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/create.js') }}"></script>
+{% endblock %}

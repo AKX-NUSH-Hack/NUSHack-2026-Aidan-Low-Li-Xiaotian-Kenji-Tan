@@ -1,0 +1,38 @@
+# ---------------------------------------------------------------
+#  listly – settings
+#
+#  1. Copy this file and rename the copy to:  config.txt
+#  2. Fill in the values below.
+#  config.txt is ignored by git, so your keys never reach GitHub.
+#  Lines starting with # are comments. No quotes needed.
+# ---------------------------------------------------------------
+
+# --- Company -----------------------------------------------------
+COMPANY_NAME=Sample Samples
+
+# --- Supabase (Project Settings -> API) --------------------------
+# Leave these blank to run in LOCAL mode (data saved in data/db/ as JSON).
+SUPABASE_URL=https://yxzupivpaoewzfeoylsc.supabase.co
+SUPABASE_KEY=sb_secret_-BEy9D1_HMYn_MpVdT-rMA_Yb-p1DgU
+
+# --- First manager account ---------------------------------------
+# Created automatically on first start if it does not exist yet.
+# Either give a plain password (easy) ...
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=change-me-now
+# Or a hash made with:  python tools/hash_password.py
+# ADMIN_PASSWORD_HASH=pbkdf2_sha256$100000$...
+
+# --- Sessions ----------------------------------------------------
+# Signs login tokens. Leave blank and the app generates one into data/secret.txt,
+# but then moving the app to a new folder logs everyone out. tools/first_run.py
+# writes a proper random value here for you.
+APP_SECRET=
+# How many days a login stays valid
+SESSION_DAYS=30
+
+# --- Server ------------------------------------------------------
+# 0.0.0.0 lets phones on the same Wi-Fi connect
+HOST=0.0.0.0
+PORT=5000
+DEBUG=false

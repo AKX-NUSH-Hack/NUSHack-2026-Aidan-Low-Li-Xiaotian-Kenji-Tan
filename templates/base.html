@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>{% block title %}{{ company_name }} · listly{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/logo.png') }}">
+  <script>
+    (function () {
+      var signedOut = false;
+      try {
+        // 1. Each run of the server has its own id. A different one means a new run,
+        //    so the app starts signed out. When offline, skip this, because an offline
+        //    page may be a cached copy carrying an old id, and signing out a guard
+        //    who has no signal would be unhelpful.
+        var BOOT = "{{ boot_id }}";
+        if (navigator.onLine && localStorage.getItem("nh.boot") !== BOOT) {
+          localStorage.setItem("nh.boot", BOOT);
+          localStorage.removeItem("nh.session");   // only the session; accounts and work stay
+          signedOut = true;
+        }
+      } catch (e) {}
+
+      try {
+        // 2. Theme: the signed-in person's choice, else this device's choice.
+        var t = localStorage.getItem("nh.theme") || "system";
+        var s = JSON.parse(localStorage.getItem("nh.session") || "null");
+        if (s && s.user) { var p = localStorage.getItem("nh.u." + s.user.id + ".theme"); if (p) t = JSON.parse(p); }
+        if (["system", "light", "dark", "novus"].indexOf(t) < 0) t = "system";
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+
+      // Go straight to the login page rather than letting a signed-out page render first.
+      if (signedOut && location.pathname !== "/login") {
+        location.replace("/login?next=" + encodeURIComponent(location.pathname + location.search));
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-page="{{ active }}">
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="{{ url_for('pages.home') }}">
+      <img class="brand-mark" src="{{ url_for('static', filename='img/logo-mark.png') }}" alt="">
+      <span class="brand-name">{{ company_name }}<span class="brand-sub">listly by Entropic Labs</span></span>
+    </a>
+    <div class="topbar-right">
+      {% if active != 'login' %}
+      <span class="who" id="who"></span>
+      <div class="status-pill" id="status-pill" title="Connection and sync status">
+        <span class="dot" id="status-dot"></span>
+        <span id="status-text">…</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if active not in ('login', 'home') %}
+  <div class="stepbar">
+    <button type="button" class="stepbar-back" id="wiz-back">Home</button>
+    <div class="stepbar-mid">
+      <div class="stepbar-title" id="wiz-title">{% block steptitle %}{% endblock %}</div>
+      <div class="stepbar-count" id="wiz-count" hidden></div>
+    </div>
+  </div>
+  <div class="stepbar-track" hidden><div class="stepbar-bar" id="wiz-bar"></div></div>
+  {% endif %}
+</header>
+
+<main class="page">
+  {% if active != 'login' %}
+  <div class="card" id="relogin-banner" hidden>
+    <div class="card-head">
+      <div><strong id="relogin-title">Please log in again</strong>
+        <span class="muted small" id="relogin-text"></span></div>
+      <a class="btn btn-primary btn-sm" id="relogin-btn" href="{{ url_for('pages.login') }}">Log in again</a>
+    </div>
+  </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+<!-- Shared confirm dialog -->
+<div class="modal" id="confirm-modal" hidden>
+  <div class="modal-box left">
+    <h3>Are you sure?</h3>
+    <p class="muted"></p>
+    <div class="row">
+      <button type="button" class="btn btn-ghost grow" data-cancel>Cancel</button>
+      <button type="button" class="btn btn-primary grow" data-ok>OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="notice" id="storage-notice" role="region" aria-label="How listly stores data" hidden>
+  <div class="notice-body">
+    <strong>listly stores data on this device</strong>
+    <p>Your login, your saved checklists and any finished checklist waiting to upload are kept
+       in this browser's storage. That is what lets the app work with no internet. Nothing is
+       sold, shared, or used for advertising, and no third party can read it.</p>
+    <p class="muted small" id="notice-detail" hidden>Stored here: who you are logged in as, your
+       colour theme, checklists you have saved, answers part-way through, and submissions that
+       have not uploaded yet. Clearing your browser data removes all of it, including any
+       finished checklist that has not reached the server. You can remove your account from this
+       device yourself under Settings.</p>
+  </div>
+  <div class="notice-actions">
+    <button type="button" class="btn btn-ghost btn-sm" id="notice-more">What is stored?</button>
+    <button type="button" class="btn btn-primary btn-sm" id="notice-ok">Got it</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="{{ url_for('static', filename='js/crypto.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% if active not in ('login', 'home') %}
+<script src="{{ url_for('static', filename='js/wizard.js') }}"></script>
+{% endif %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

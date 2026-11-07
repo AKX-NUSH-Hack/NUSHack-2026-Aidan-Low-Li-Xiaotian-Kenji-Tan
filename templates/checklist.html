@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block title %}Do a checklist · {{ company_name }}{% endblock %}
+
+{% block content %}
+
+<section data-step="choose" data-title="Choose a checklist" data-progress="1/4">
+  <div class="card">
+    <h2 class="card-title">Which checklist do you want to do?</h2>
+    <p class="step-lead">Pick where it is coming from.</p>
+    <div class="picks">
+      <button type="button" class="pick" id="pick-scan">
+        <span class="pick-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/>
+            <path d="M7 12h10"/>
+          </svg>
+        </span>
+        <span class="pick-text"><strong>Scan a QR code</strong><span id="pick-scan-sub">Point the camera at a printed checklist</span></span>
+      </button>
+
+      <button type="button" class="pick" id="pick-code">
+        <span class="pick-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM19 19h2M19 14h2M14 19h2"/>
+          </svg>
+        </span>
+        <span class="pick-text"><strong>Paste a code</strong><span>Someone sent you a code or a QR</span></span>
+      </button>
+
+      <button type="button" class="pick" id="pick-company">
+        <span class="pick-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 12h6M9 16h6"/>
+          </svg>
+        </span>
+        <span class="pick-text"><strong>Company checklists</strong><span id="pick-company-sub">None yet</span></span>
+      </button>
+
+      <button type="button" class="pick" id="pick-saved">
+        <span class="pick-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+        </span>
+        <span class="pick-text"><strong>Saved on this account</strong><span id="pick-saved-sub">None yet</span></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section data-step="code" data-title="Paste the code" data-progress="1/4" hidden>
+  <div class="card">
+    <h2 class="card-title">Paste the checklist code</h2>
+    <p class="step-lead">It is the long text behind a QR code and starts with <code>CL1.</code></p>
+    <textarea id="code-input" class="input code" rows="3" data-autofocus
+              placeholder="CL1.…" spellcheck="false" autocapitalize="off" autocorrect="off"
+              aria-label="Checklist code"></textarea>
+    <p class="hint" id="code-hint"></p>
+    <div class="step-foot">
+      <button type="button" class="btn btn-primary btn-lg" id="code-next">Open it</button>
+    </div>
+  </div>
+</section>
+
+<section data-step="scan" data-title="Scan a QR code" data-progress="1/4" hidden>
+  <div class="card" id="scan-intro">
+    <h2 class="card-title">This will turn on your camera</h2>
+    <p class="step-lead">Before it does, here is exactly what happens.</p>
+    <ul class="plain">
+      <li><strong>The camera is only used to read the QR code.</strong> It looks for a checklist code and nothing else.</li>
+      <li><strong>Nothing is photographed, saved or uploaded.</strong> The picture is read and thrown away, frame by frame, on this device.</li>
+      <li><strong>The camera stops the moment you leave this screen.</strong> You can also stop it yourself at any time.</li>
+      <li><strong>Your browser will ask permission first.</strong> If you say no, nothing happens and you can paste the code instead.</li>
+    </ul>
+    <p class="hint" id="scan-intro-hint"></p>
+    <div class="step-foot">
+      <button type="button" class="btn btn-primary btn-lg" id="scan-start">Turn on the camera</button>
+      <button type="button" class="btn btn-ghost" id="scan-paste-instead">Paste the code instead</button>
+    </div>
+  </div>
+
+  <div class="card" id="scan-live" hidden>
+    <h2 class="card-title">Point the camera at the QR code</h2>
+    <div class="scanner">
+      <video id="scan-video" playsinline muted></video>
+      <div class="scanner-frame" aria-hidden="true"></div>
+    </div>
+    <p class="hint" id="scan-hint">Looking for a QR code…</p>
+    <div class="step-foot">
+      <button type="button" class="btn btn-ghost btn-lg" id="scan-stop">Stop the camera</button>
+    </div>
+  </div>
+</section>
+
+<section data-step="list" data-title="Pick one" data-progress="1/4" hidden>
+  <div class="card">
+    <h2 class="card-title" id="list-title">Pick a checklist</h2>
+    <p class="step-lead" id="list-lead"></p>
+    <ul class="list" id="list-rows"></ul>
+    <p class="hint" id="list-hint"></p>
+  </div>
+</section>
+
+<section data-step="answer" data-title="Answer the items" data-progress="2/4" hidden>
+  <div class="card">
+    <h2 class="card-title" id="answer-title">Checklist</h2>
+    <p class="step-lead">Tap <strong>Yes</strong> or <strong>No</strong>, or type the number asked for. Your answers save as you go, even with no internet.</p>
+    <ol class="items" id="items"></ol>
+    <p class="hint" id="answer-hint"></p>
+    <div class="step-foot">
+      <button type="button" class="btn btn-primary btn-lg" id="answer-next">Next</button>
+    </div>
+  </div>
+</section>
+
+<section data-step="notes" data-title="Anything to add?" data-progress="3/4" hidden>
+  <div class="card">
+    <h2 class="card-title">Anything to add?</h2>
+    <p class="step-lead">Only if something was unusual. You can leave this empty.</p>
+    <textarea id="notes-input" class="input" rows="4" data-autofocus
+              placeholder="e.g. Side door handle is loose" maxlength="1000"></textarea>
+    <div class="step-foot">
+      <button type="button" class="btn btn-primary btn-lg" id="notes-next">Next</button>
+    </div>
+  </div>
+</section>
+
+<section data-step="review" data-title="Check and submit" data-progress="4/4" hidden>
+  <div class="card">
+    <h2 class="card-title">Check your answers</h2>
+    <p class="step-lead" id="review-lead">Make sure this is right, then submit.</p>
+    <ul class="review" id="review-list"></ul>
+    <p class="muted small mt-sm" id="review-notes"></p>
+    <div class="step-foot">
+      <button type="button" class="btn btn-primary btn-lg" id="submit-btn">Submit checklist</button>
+    </div>
+  </div>
+</section>
+
+<section data-step="done" data-title="Submitted" hidden>
+  <div class="card">
+    <div class="receipt">
+      <div class="receipt-mark" id="done-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
+      <h2 id="done-title">Submitted</h2>
+      <p id="done-sub"></p>
+      <p class="muted small" id="done-when"></p>
+    </div>
+  </div>
+
+  <div class="bigbtns">
+    <button type="button" class="bigbtn bigbtn-primary" id="again-same">
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.7 3"/><path d="M3 4v5h5"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong>Do this one again</strong><span id="again-same-sub"></span></span>
+    </button>
+
+    <button type="button" class="bigbtn" id="again-other">
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong>Do a different checklist</strong><span>Start again from the list</span></span>
+    </button>
+
+    <a class="bigbtn" href="/">
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 22v-7h6v7"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong>Go home</strong><span>Back to the main screen</span></span>
+    </a>
+  </div>
+</section>
+
+<!-- QR dialog -->
+<div class="modal" id="qr-modal" hidden>
+  <div class="modal-box">
+    <h3 id="qr-title">Share this checklist</h3>
+    <img id="qr-img" alt="QR code of the checklist code" class="qr-img">
+    <p class="muted small">The QR holds the code itself. Scan it with any camera app, copy the text, then paste it into “Paste a code”.</p>
+    <div class="row row-wrap">
+      <button type="button" class="btn btn-ghost grow" id="qr-copy-btn">Copy code</button>
+      <a class="btn btn-ghost grow" id="qr-svg-btn" download="checklist-qr.svg">SVG</a>
+      <button type="button" class="btn btn-ghost grow" id="qr-png-btn">PNG</button>
+      <button type="button" class="btn btn-primary grow" id="qr-close-btn">Close</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if qr_lib %}<script src="{{ url_for('static', filename='js/vendor/jsQR.js') }}"></script>{% endif %}
+<script src="{{ url_for('static', filename='js/qr-modal.js') }}"></script>
+<script src="{{ url_for('static', filename='js/checklist.js') }}"></script>
+{% endblock %}

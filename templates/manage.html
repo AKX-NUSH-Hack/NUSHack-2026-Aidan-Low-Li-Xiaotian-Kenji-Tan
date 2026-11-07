@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Manage · {{ company_name }}{% endblock %}
+
+{% block content %}
+
+<section class="card card-empty" id="not-manager" hidden>
+  <p><strong>Managers only</strong></p>
+  <p class="muted small">Ask a manager if you need access.</p>
+</section>
+
+<section class="card card-empty" id="manage-offline" hidden>
+  <p><strong id="manage-offline-title">You are offline</strong></p>
+  <p class="muted small" id="manage-offline-text">Managing people, the logo and submissions needs a connection. Everything else in the app still works.</p>
+  <a class="btn btn-primary mt-sm" id="manage-login-btn" href="/login?next=/manage" hidden>Log in again</a>
+</section>
+
+<div id="manage-body" hidden>
+
+<section data-step="menu" data-title="Manage">
+  <div class="bigbtns">
+    <button type="button" class="bigbtn" id="go-adduser">
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong>Add a person</strong><span>Create a login for a guard or another manager</span></span>
+    </button>
+
+    <button type="button" class="bigbtn" id="go-users">
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong>People</strong><span id="users-sub">Change roles, reset passwords, turn accounts off</span></span>
+    </button>
+
+    <button type="button" class="bigbtn" id="go-subs">
+      <span class="bigbtn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/>
+        </svg>
+      </span>
+      <span class="bigbtn-text"><strong>Read submissions</strong><span id="subs-sub">Everything your guards have sent in</span></span>
+    </button>
+
+
+  </div>
+</section>
+
+<section data-step="adduser" data-title="Add a person" hidden>
+  <div class="card">
+    <h2 class="card-title">Create a login</h2>
+    <p class="step-lead">Give them a temporary password and tell them what it is. They can change it in Settings.</p>
+    <div class="field">
+      <label class="label" for="nu-name">Their name</label>
+      <input type="text" id="nu-name" class="input" data-autofocus maxlength="60" placeholder="e.g. Tan Wei Ming">
+    </div>
+    <div class="field">
+      <label class="label" for="nu-username">Username they will type</label>
+      <input type="text" id="nu-username" class="input" maxlength="32" autocapitalize="off"
+             placeholder="e.g. tan.wm">
+    </div>
+    <div class="field">
+      <label class="label" for="nu-password">Temporary password <span class="muted">(8 characters or more)</span></label>
+      <input type="text" id="nu-password" class="input" minlength="8" maxlength="128" autocomplete="new-password">
+    </div>
+    <div class="field">
+      <label class="label" for="nu-role">What can they do?</label>
+      <select id="nu-role" class="input">
+        <option value="guard">Guard – fill in checklists</option>
+        <option value="manager">Manager – everything, including this page</option>
+      </select>
+    </div>
+    <p class="hint" id="nu-hint"></p>
+    <div class="step-foot">
+      <button type="button" class="btn btn-primary btn-lg" id="nu-btn">Create the login</button>
+    </div>
+  </div>
+</section>
+
+<section data-step="users" data-title="People" hidden>
+  <div class="card">
+    <div class="table-wrap">
+      <table class="table" id="users-table">
+        <thead><tr><th>Person</th><th>Can do</th><th>Status</th><th></th></tr></thead>
+        <tbody><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section data-step="subs" data-title="Submissions" hidden>
+  <div class="card">
+    <div class="row row-wrap">
+      <select id="filter-user" class="input grow"><option value="">Everyone</option></select>
+      <select id="filter-problems" class="input grow">
+        <option value="">All results</option>
+        <option value="no">Only ones with a “No”</option>
+      </select>
+    </div>
+    <input type="search" id="filter-text" class="input mt-sm" placeholder="Search a checklist name or note">
+    <div class="row row-wrap mt-sm">
+      <button type="button" class="btn btn-ghost btn-sm" id="export-csv">Export as CSV</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="refresh-subs">Refresh</button>
+      <span class="muted small" id="subs-count"></span>
+    </div>
+    <div class="table-wrap mt-sm">
+      <table class="table" id="subs-table">
+        <thead><tr><th>When</th><th>Who</th><th>Checklist</th><th>Result</th></tr></thead>
+        <tbody><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="hint">Tap a row to see every answer.</p>
+  </div>
+</section>
+
+</div>
+
+<div class="modal" id="sub-modal" hidden>
+  <div class="modal-box left">
+    <h3 id="sub-title">Submission</h3>
+    <p class="muted small" id="sub-meta"></p>
+    <ul class="review" id="sub-results"></ul>
+    <p class="small" id="sub-notes"></p>
+    <div class="row"><button type="button" class="btn btn-primary grow" id="sub-close">Close</button></div>
+  </div>
+</div>
+
+<div class="modal" id="reset-modal" hidden>
+  <div class="modal-box left">
+    <h3>New password</h3>
+    <p class="muted small" id="reset-who"></p>
+    <input type="text" id="reset-password" class="input" placeholder="At least 8 characters" minlength="8" maxlength="128" autocomplete="off">
+    <div class="row">
+      <button type="button" class="btn btn-ghost grow" id="reset-cancel">Cancel</button>
+      <button type="button" class="btn btn-primary grow" id="reset-ok">Set it</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/manage.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Settings · {{ company_name }}{% endblock %}
+{% block steptitle %}Settings{% endblock %}
+
+{% block content %}
+<div class="grid-2">
+<div>
+  <section class="card">
+    <h2 class="card-title">Appearance</h2>
+    <div class="themes" id="themes">
+      <button type="button" class="theme-card" data-theme="system">
+        <div class="swatches"><span class="sw" style="background:#f4f5f7"></span><span class="sw" style="background:#0b1220"></span><span class="sw" style="background:#2563eb"></span></div>
+        <strong>System</strong><span>Follows your device</span>
+      </button>
+      <button type="button" class="theme-card" data-theme="light">
+        <div class="swatches"><span class="sw" style="background:#ffffff"></span><span class="sw" style="background:#f4f5f7"></span><span class="sw" style="background:#2563eb"></span></div>
+        <strong>Light</strong><span>Bright and clean</span>
+      </button>
+      <button type="button" class="theme-card" data-theme="dark">
+        <div class="swatches"><span class="sw" style="background:#0b1220"></span><span class="sw" style="background:#121a2b"></span><span class="sw" style="background:#60a5fa"></span></div>
+        <strong>Dark</strong><span>Easy on the eyes</span>
+      </button>
+      <button type="button" class="theme-card" data-theme="novus">
+        <div class="swatches"><span class="sw" style="background:#ffffff"></span><span class="sw" style="background:#00a693"></span><span class="sw" style="background:#008080"></span><span class="sw" style="background:#7fffd4"></span></div>
+        <strong>Novus</strong><span>Persian green &amp; teal</span>
+      </button>
+    </div>
+    <p class="hint">Saved to your account on this device.</p>
+  </section>
+
+  <section class="card">
+    <h2 class="card-title">Account</h2>
+    <p><strong id="acc-name"></strong> <span class="muted small" id="acc-sub"></span></p>
+    <div class="section-title">Change password</div>
+    <form id="pw-form" autocomplete="on">
+      <div class="field"><label class="label" for="pw-current">Current password</label>
+        <input type="password" id="pw-current" class="input" autocomplete="current-password" required></div>
+      <div class="field"><label class="label" for="pw-new">New password <span class="muted">(8+ characters)</span></label>
+        <input type="password" id="pw-new" class="input" autocomplete="new-password" required minlength="8"></div>
+      <div class="field"><label class="label" for="pw-again">New password again</label>
+        <input type="password" id="pw-again" class="input" autocomplete="new-password" required minlength="8"></div>
+      <button type="submit" class="btn btn-ghost" id="pw-btn">Update password</button>
+      <p class="hint" id="pw-hint">Needs a connection.</p>
+    </form>
+    <div class="row mt-md">
+      <button type="button" class="btn btn-ghost" id="logout-btn">Log out</button>
+    </div>
+  </section>
+</div>
+
+<div>
+  <section class="card">
+    <h2 class="card-title">This device</h2>
+    <ul class="list">
+      <li><span>Submissions waiting to sync</span><strong id="dev-pending">0</strong></li>
+      <li><span>Checklists saved for this account</span><strong id="dev-lists">0</strong></li>
+      <li><span>Accounts remembered on this device</span><strong id="dev-accounts">0</strong></li>
+      <li><span>Storage used</span><strong id="dev-storage">0 KB</strong></li>
+      <li><span>Offline password check</span><strong id="dev-crypto"></strong></li>
+      <li><span>Version</span><strong>v{{ version }}</strong></li>
+    </ul>
+    <div class="row row-wrap mt-md">
+      <button type="button" class="btn btn-ghost" id="sync-now-btn">Sync now</button>
+      <button type="button" class="btn btn-danger" id="forget-btn">Remove my account from this device</button>
+    </div>
+    <p class="hint">Removing your account only clears this device. Synced submissions stay on the server.</p>
+  </section>
+
+  <section class="card" id="logo-card" hidden>
+    <h2 class="card-title">Company logo</h2>
+    <p class="muted small">Sits in the middle of every QR code, on every device. Only managers can change it. Simple, bold shapes scan best.</p>
+
+    <div class="row row-wrap mt-sm" style="align-items:flex-start">
+      <div class="logo-preview" id="logo-preview"><span class="muted small">No logo</span></div>
+      <div class="grow">
+        <label class="label" for="logo-file">Choose an SVG file</label>
+        <input type="file" id="logo-file" class="input" accept=".svg,image/svg+xml">
+        <label class="label mt-sm" for="logo-text">Or paste the SVG text</label>
+        <textarea id="logo-text" class="input code" rows="4" spellcheck="false"
+                  placeholder="&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 100&quot;&gt;…&lt;/svg&gt;"></textarea>
+      </div>
+    </div>
+
+    <div class="row row-wrap mt-sm">
+      <button type="button" class="btn btn-primary" id="logo-save">Save the logo</button>
+      <button type="button" class="btn btn-danger" id="logo-clear">Remove</button>
+    </div>
+    <p class="hint" id="logo-hint">Up to 50 KB. Anything that could run code is stripped out before saving.</p>
+  </section>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %}

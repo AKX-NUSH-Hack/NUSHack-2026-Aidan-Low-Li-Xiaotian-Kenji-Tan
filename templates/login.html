@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Log in · {{ company_name }}{% endblock %}
+
+{% block content %}
+<div class="login-wrap">
+  <section class="card">
+    <h2 class="card-title">Log in</h2>
+
+    <div id="accounts-block" hidden>
+      <span class="label">Accounts on this device</span>
+      <div class="accounts" id="accounts"></div>
+      <p class="hint">Tap an account, then enter its password. These can log in without internet.</p>
+    </div>
+
+    <form id="login-form" class="mt-md" autocomplete="on">
+      <div class="field">
+        <label class="label" for="username">Username</label>
+        <input type="text" id="username" class="input" autocomplete="username" autocapitalize="off"
+               autocorrect="off" spellcheck="false" required maxlength="32">
+      </div>
+      <div class="field">
+        <label class="label" for="password">Password</label>
+        <div class="row">
+          <input type="password" id="password" class="input grow" autocomplete="current-password" required maxlength="128">
+          <button type="button" class="btn btn-ghost" id="show-pw" aria-pressed="false">Show</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg btn-block" id="login-btn">Log in</button>
+      <p class="hint" id="login-hint"></p>
+    </form>
+  </section>
+
+  <p class="muted small" style="text-align:center">No account? Ask a manager to create one for you.</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}
